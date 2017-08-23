@@ -4,90 +4,86 @@
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
 <script type="text/javascript" src="jquery.min.js"></script>
 <style type="text/css">
-	*{font-size:14px;font-family:"YaHei Consolas Hybrid"}
-	body{margin:0;padding:20px;width:99999px;overflow-x:hidden;}
-	tex{color:#f66;}
-	#title{position:fixed;width:100%;height:30px;margin:-20px;padding:20px;background:#f9f9f9;border-bottom:1px solid #bbb;}
-	a{color:#00f;text-decoration:underline;}
-	input{text-align:center;}
+*{font-size:14px;font-family:"YaHei Consolas Hybrid"}
+body{margin:0;padding:20px;width:99999px;overflow-x:hidden;}
+a{color:#00f;text-decoration:underline;}
+tex{color:#f66;}
+input{text-align:center;}
+#title{position:fixed;width:100%;height:30px;margin:-20px;padding:20px;background:#f9f9f9;border-bottom:1px solid #bbb;}
 </style>
 <script type="text/javascript">
-function log(str) {
-	console.log(str);
-}
-
-function init() {
-	var resultCount = 0;
-	var slotNumber = $("#slotnumber").attr("value");
-	slotNumber = parseInt(slotNumber);
-	var maxNumber = $("#maxnumber").attr("value");
-	maxNumber = parseInt(maxNumber);
-	var aList = $("a");
-	for (var i = 0; i < aList.length; i++) {
-		var slotMatch = false;
-		var numberMatch = false;
-		var aItem = $(aList[i]);
-		var aText = aItem.text();
-
-		if (slotNumber > 0) {
-			var slotList = aText.match(/[0-9]{1}孔/gm);
-			var slot = slotList[0].replace("孔", "");
-			slot = parseInt(slot);
-			if (slotNumber == slot) {
-				slotMatch = true;
-			}
-		} else {
-			slotMatch = true;
-		}
-
-		var numberList = aText.match(/[(][0-9]+[)]/gm);
-		for (var j = 0; j < numberList.length; j++) {
-			var value = numberList[j];
-			value = value.replace(/[()]/gm, "");
-			numberList[j] = parseInt(value);
-		}
-		var numberMax = Math.max.apply(null, numberList);
-		if (numberMax <= maxNumber) {
-			numberMatch = true;
-		}
-		if (slotMatch && numberMatch) {
-			resultCount ++;
-			aItem.css("display", "inline");
-			aItem.next().css("display", "inline");
-		} else {
-			aItem.css("display", "none");
-			aItem.next().css("display", "none");
-		}
-	}
-	$("#resultcount").text(resultCount);
-	var divList = $("div");
-	for (var i = 0; i < divList.length; i++) {
-		var hasShownA = false;
-		var divItem = $(divList[i]);
-		var aList = divItem.find("a");
-		if (aList.length == 0) {
-			continue;
-		}
-		for (var j = 0; j < aList.length; j++) {
-			var aItem = $(aList[j]);
-			if (aItem.css("display") == "inline") {
-				hasShownA = true;
-			}
-		}
-		if (hasShownA) {
-			divItem.css("display", "inline");
-		} else {
-			divItem.css("display", "none");
-		}
-	}
+function dofilter() {
+    var resultCount = 0;
+    var slotNumber = parseInt($("#slotnumber").attr("value"));
+    var maxNumber = parseInt($("#maxnumber").attr("value"));
+    // 筛选满足条件的装备
+    var aList = $("a");
+    for (var i = 0; i < aList.length; i++) {
+        var slotMatch = false;
+        var numberMatch = false;
+        var aItem = $(aList[i]);
+        var aText = aItem.text();
+        // 筛选指定孔数
+        if (slotNumber > 0) {
+            var slotList = aText.match(/[0-9]{1}孔/gm);
+            var slot = slotList[0].replace("孔", "");
+            slot = parseInt(slot);
+            if (slotNumber == slot) {
+                slotMatch = true;
+            }
+        } else {
+            slotMatch = true;
+        }
+        // 筛选最高符文等级
+        var numberList = aText.match(/[(][0-9]+[)]/gm);
+        for (var j = 0; j < numberList.length; j++) {
+            var value = numberList[j];
+            value = value.replace(/[()]/gm, "");
+            numberList[j] = parseInt(value);
+        }
+        var numberMax = Math.max.apply(null, numberList);
+        if (numberMax <= maxNumber) {
+            numberMatch = true;
+        }
+        if (slotMatch && numberMatch) {
+            resultCount++;
+            aItem.css("display", "inline");
+            aItem.next().css("display", "inline");
+        } else {
+            aItem.css("display", "none");
+            aItem.next().css("display", "none");
+        }
+    }
+    $("#resultcount").text(resultCount);
+    // 隐藏筛选后无内容的装备类型
+    var divList = $("div");
+    for (var i = 0; i < divList.length; i++) {
+        var hasShownA = false;
+        var divItem = $(divList[i]);
+        var aList = divItem.find("a");
+        if (aList.length == 0) {
+            continue;
+        }
+        for (var j = 0; j < aList.length; j++) {
+            var aItem = $(aList[j]);
+            if (aItem.css("display") == "inline") {
+                hasShownA = true;
+            }
+        }
+        if (hasShownA) {
+            divItem.css("display", "inline");
+        } else {
+            divItem.css("display", "none");
+        }
+    }
 }
 </script>
 </head>
-<body onload="init();">
+<body>
 <div id="title">
-装备孔数：<input id="slotnumber" size="2" maxLength="1" value="0" oninput="init();" />&nbsp;&nbsp;
-最高符文：<input id="maxnumber" size="2" maxLength="2" value="33" oninput="init();" />&nbsp;&nbsp;
-检索到<tex id="resultcount">0</tex>个结果
+装备孔数：<input id="slotnumber" size="2" maxLength="1" value="0" oninput="dofilter();" />&nbsp;&nbsp;
+最高符文：<input id="maxnumber" size="2" maxLength="2" value="33" oninput="dofilter();" />&nbsp;&nbsp;
+检索到<tex id="resultcount">107</tex>个结果
 </div>
 <div style="height:50px;"></div>
 <div>
