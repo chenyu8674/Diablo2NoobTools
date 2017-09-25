@@ -16,6 +16,7 @@ function dofilter() {
     var resultCount = 0;
     var slotNumber = parseInt($("#slotnumber").attr("value"));
     var maxNumber = parseInt($("#maxnumber").attr("value"));
+    var minNumber = parseInt($("#minnumber").attr("value"));
     // 筛选满足条件的装备
     var aList = $("a");
     for (var i = 0; i < aList.length; i++) {
@@ -42,7 +43,7 @@ function dofilter() {
             numberList[j] = parseInt(value);
         }
         var numberMax = Math.max.apply(null, numberList);
-        if (numberMax <= maxNumber) {
+        if (numberMax <= maxNumber && numberMax >= minNumber) {
             numberMatch = true;
         }
         if (slotMatch && numberMatch) {
@@ -82,7 +83,8 @@ function dofilter() {
 <body>
 <div id="title">
 装备孔数：<input id="slotnumber" size="2" maxLength="1" value="0" oninput="dofilter();" />&nbsp;&nbsp;
-最高符文：<input id="maxnumber" size="2" maxLength="2" value="33" oninput="dofilter();" />&nbsp;&nbsp;
+最高MAX符文：<input id="maxnumber" size="2" maxLength="2" value="33" oninput="dofilter();" />&nbsp;&nbsp;
+最低MAX符文：<input id="minnumber" size="2" maxLength="2" value="1" oninput="dofilter();" />&nbsp;&nbsp;
 检索到<tex id="resultcount">107</tex>个结果
 </div>
 <div style="height:50px;"></div>
@@ -497,7 +499,7 @@ function dofilter() {
 ">4.1 毒牙 Venom 3孔武器 Tal(3)+Dol(14)+Mal(23)</a><br>
 <a title="
 +260-380%对恶魔的伤害
-击昏时有20%机会施展等级12降低抵抗
+被击中时有20%机会施展等级12降低抵抗
 击中敌人时有25%机会施展等级15剧毒新星
 -23%敌人的毒素系抗性
 0.375-37.125%机率出现致命攻击[DS](以角色等级决定)
@@ -506,7 +508,7 @@ function dofilter() {
 冰冻目标+3
 +10力量
 25%机率撕开敌人伤口
-">4.2 喝彩 Plague 3孔武器 Cham(32)+Fal(19)+Um(22)</a><br>
+">4.2 瘟疫 Plague 3孔武器 Cham(32)+Fal(19)+Um(22)</a><br>
 <a title="
 +25%提升攻击速度[IAS]
 +160-210%增强伤害[ED](可变)
