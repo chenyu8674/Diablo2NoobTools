@@ -8,10 +8,23 @@ body{padding:0px;}
 div{margin-left:30px;}
 *{font-size:14px;line-height:20px;font-family:"YaHei Consolas Hybrid"}
 tex{margin-left:-30px;color:#666;font-size:16px;font-weight:900}
-input{text-align:center;}
+input{padding-left:20px;text-align:left;}
 #title{position:fixed;width:100%;height:100px;margin:-20px;padding:20px;background:#f9f9f9;border-bottom:1px solid #bbb;}
+.hid{display:none;visibility:hidden;}
 </style>
 <script type="text/javascript">
+$(document).ready(function(){
+	setTimeout(scroll, 0);
+});
+
+function scroll() {
+	$("html").get(0).scrollTop = 0;
+}
+
+function log(obj) {
+	console.log(obj);
+}
+
 function getstr(v,s,e,a,b){
 	var r="";
 	var t=v.indexOf(s);
@@ -44,8 +57,19 @@ function getstrarray(v,s,e,a,b){
 	return r;
 }
 
+function clearinput() {
+	$("#equipname").attr("value", "");
+	dofilter();
+}
+
+var oldName = "";
 function dofilter() {
 	var equipName = $("#equipname").attr("value");
+	if (oldName != equipName) {
+		oldName = equipName;
+		scroll();
+		log("here1");
+	}
 	if (equipName == "") {
 		$("#result").hide();
 		$("#equips").show();
@@ -55,8 +79,11 @@ function dofilter() {
 	}
 	var resultStr = "";
     var resultCount = 0;
-	var equipsStr = $("#equips").text();
+	var equipsStr = $("#equips").html();
 	equipsStr = getstrarray(equipsStr, "\n", "\n", 1, 1);
+	for (var i = 0; i < equipsStr.length; i++) {
+		equipsStr[i] = equipsStr[i].replace("\n", "");
+	}
 	for (var i = 0; i < equipsStr.length; i++) {
 		var lineStr = equipsStr[i];
 		if (lineStr.indexOf("、") > 0) continue;
@@ -66,10 +93,10 @@ function dofilter() {
 		if (lineStr.toLowerCase().indexOf(equipName.toLowerCase()) < 0) continue;
 
 		resultCount ++;
-		if (resultStr == "") {
-			resultStr += "<br>" + lineStr;
+		if (resultStr == "<br>") {
+			resultStr += lineStr;
 		} else {
-			resultStr += "<br><br>" + lineStr;
+			resultStr += "<br>" + lineStr;
 		}
 		var nextCount = 1;
 		var nextStr = "";
@@ -80,13 +107,14 @@ function dofilter() {
 			if (!nextStr) {
 				break;
 			}
-			if (nextStr.length <= 1) {
+			if (nextStr == "<br>") {
 				isThisEquip = false;
 			} else {
-				resultStr += "<br>" + nextStr;
+				resultStr += nextStr;
 			}
 		}
 	}
+	resultStr = resultStr.replace("<br>", "");
     $("#resultcount").text(resultCount);
 	$("#result").html(resultStr);
 }
@@ -96,8 +124,8 @@ function dofilter() {
 <div id="title">
 数值代表<tex style="color:#f66;font-size:14px;margin-left:2px;">300mf、单人模式下，掉落一件该装备所需击杀指定怪物的平均次数</tex>
 <br>其他mf值可进行换算，如0mf则掉率降低约60%，1000mf则掉率提高约30%
-<br>去除了低级物品、任务杀/Bug杀和平均需要10000次以上(掉率极低除外)的情况
-<br><br><tex style="margin-left:100px;">检索装备：</tex><input id="equipname" size="20" maxLength="20" value="" oninput="dofilter();" />&nbsp;&nbsp;
+<br>不包括任务杀/Bug杀和平均需要10000次以上(除非掉率极低)的情况，部分低级易出装备未列出
+<br><br><tex style="margin-left:80px;">检索装备：</tex><input id="equipname" size="20" maxLength="20" value="" onclick="clearinput()" oninput="dofilter();" />&nbsp;&nbsp;
 检索到<tex id="resultcount" style="color:#f66;font-size:14px;margin-left:0px;font-weight:300">120</tex>个结果
 </div>
 <div style="height:120px;"></div>
@@ -105,7 +133,7 @@ function dofilter() {
 <div id="equips">
 <br><tex>一、[戒指] Rings</tex>
 <br>
-<br>[拿各的戒指] (戒指) Nagelring
+<br>[拿各的戒指] (戒指) Nagelring<div class="hid">戒指|MF戒指</div>
 <br>56 安达利尔
 <br>108 安达利尔(噩梦)
 <br>177 安达利尔(地狱)
@@ -119,7 +147,7 @@ function dofilter() {
 <br>474 巴尔
 <br>475 墨非斯托(噩梦)
 <br>
-<br>[乔丹之石] (戒指) The Stone of Jordan
+<br>[乔丹之石] (戒指) The Stone of Jordan<div class="hid">戒指</div>
 <br>1616 安达利尔(噩梦)
 <br>2656 安达利尔(地狱)
 <br>4304 暗黑破坏神
@@ -133,7 +161,7 @@ function dofilter() {
 <br>7401 暗黑破坏神(地狱)
 <br>7568 墨非斯托(地狱)
 <br>
-<br>[乌鸦之霜] (戒指) Raven Frost
+<br>[乌鸦之霜] (戒指) Raven Frost<div class="hid">戒指</div>
 <br>266 安达利尔(地狱)
 <br>604 督瑞尔(噩梦)
 <br>632 督瑞尔(地狱)
@@ -145,7 +173,7 @@ function dofilter() {
 <br>740 暗黑破坏神(地狱)
 <br>757 墨非斯托(地狱)
 <br>
-<br>[布尔凯索之戒] (戒指) Bul-Kathos' Wedding Band
+<br>[布尔凯索之戒] (戒指) Bul-Kathos' Wedding Band<div class="hid">戒指|婚戒</div>
 <br>2656 安达利尔(地狱)
 <br>6319 督瑞尔(地狱)
 <br>7279 巴尔(地狱)
@@ -153,7 +181,7 @@ function dofilter() {
 <br>7401 暗黑破坏神(地狱)
 <br>7568 墨非斯托(地狱)
 <br>
-<br>[大自然的和平] (戒指) Nature's Peace
+<br>[大自然的和平] (戒指) Nature's Peace<div class="hid">戒指</div>
 <br>2106 督瑞尔(地狱)
 <br>2426 巴尔(地狱)
 <br>2467 暗黑破坏神(地狱)
@@ -163,13 +191,13 @@ function dofilter() {
 <br>7754 罗达门特(地狱)
 <br>8708 女伯爵(地狱)
 <br>
-<br>[鬼火投射者] (戒指) Wisp Projector
+<br>[鬼火投射者] (戒指) Wisp Projector<div class="hid">戒指</div>
 <br>6319 督瑞尔(地狱)
 <br>7279 巴尔(地狱)
 <br>7401 暗黑破坏神(地狱)
 <br>7568 墨非斯托(地狱)
 <br>
-<br>[腐肉之风] (戒指) Carrion Wind
+<br>[腐肉之风] (戒指) Carrion Wind<div class="hid">戒指</div>
 <br>885 安达利尔(地狱)
 <br>2106 督瑞尔(地狱)
 <br>2426 巴尔(地狱)
@@ -184,7 +212,7 @@ function dofilter() {
 <br>
 <br><tex>二、[项链] Amulet</tex>
 <br>
-<br>[猫眼] (项链) The Cat's Eye
+<br>[猫眼] (项链) The Cat's Eye<div class="hid">项链</div>
 <br>1313 安达利尔(地狱)
 <br>2795 墨非斯托(噩梦)
 <br>3049 暗黑破坏神(噩梦)
@@ -198,7 +226,7 @@ function dofilter() {
 <br>8170 尼拉塞克(噩梦)
 <br>9496 召唤者(地狱)
 <br>
-<br>[旭日东升] (项链) The Rising Sun
+<br>[旭日东升] (项链) The Rising Sun<div class="hid">项链</div>
 <br>1313 安达利尔(地狱)
 <br>3213 督瑞尔(地狱)
 <br>3622 巴尔(噩梦)
@@ -207,7 +235,7 @@ function dofilter() {
 <br>3848 墨非斯托(地狱)
 <br>9496 召唤者(地狱)
 <br>
-<br>[大君之怒] (项链) Highlord's Wrath
+<br>[大君之怒] (项链) Highlord's Wrath<div class="hid">项链|大军</div>
 <br>1313 安达利尔(地狱)
 <br>3213 督瑞尔(地狱)
 <br>3622 巴尔(噩梦)
@@ -216,7 +244,7 @@ function dofilter() {
 <br>3848 墨非斯托(地狱)
 <br>9496 召唤者(地狱)
 <br>
-<br>[炙天使之韵] (项链) Seraph's Hymn
+<br>[炙天使之韵] (项链) Seraph's Hymn<div class="hid">项链</div>
 <br>2189 安达利尔(地狱)
 <br>5355 督瑞尔(地狱)
 <br>6036 巴尔(噩梦)
@@ -224,13 +252,13 @@ function dofilter() {
 <br>6272 暗黑破坏神(地狱)
 <br>6413 墨非斯托(地狱)
 <br>
-<br>[金属网格] (项链) Metalgrid
+<br>[金属网格] (项链) Metalgrid<div class="hid">项链</div>
 <br>8033 督瑞尔(地狱)
 <br>9253 巴尔(地狱)
 <br>9409 暗黑破坏神(地狱)
 <br>9620 墨非斯托(地狱)
 <br>
-<br>[马拉的万花筒] (项链) Mara's Kaleidoscope
+<br>[马拉的万花筒] (项链) Mara's Kaleidoscope<div class="hid">项链</div>
 <br>3213 督瑞尔(地狱)
 <br>3701 巴尔(地狱)
 <br>3763 暗黑破坏神(地狱)
@@ -239,7 +267,7 @@ function dofilter() {
 <br>
 <br><tex>三、[角色专用] Class-Specific Items</tex>
 <br>
-<br>[眼球] (涡流水晶) The Oculus [Swirling Crystal]
+<br>[眼球] (涡流水晶) The Oculus [Swirling Crystal]<div class="hid">法师|SOR|武器|法球</div>
 <br>1224 巴尔(噩梦)
 <br>1230 暗黑破坏神(噩梦)
 <br>1274 安达利尔(地狱)
@@ -249,14 +277,14 @@ function dofilter() {
 <br>1650 墨非斯托(噩梦)
 <br>3030 督瑞尔(地狱)
 <br>
-<br>[艾丝屈塔的脾气] (怪异之球) Eschuta's Temper [Eldritch Orb]
+<br>[艾丝屈塔的脾气] (怪异之球) Eschuta's Temper [Eldritch Orb]<div class="hid">法师|SOR|武器|法球</div>
 <br>894 暗黑破坏神(地狱)
 <br>911 巴尔(地狱)
 <br>923 墨非斯托(地狱)
 <br>2882 督瑞尔(地狱)
 <br>6898 尼拉塞克(地狱)
 <br>
-<br>[死亡深度] (次元碎片) Death's Fathom [Dimensional Shard]
+<br>[死亡深度] (次元碎片) Death's Fathom [Dimensional Shard]<div class="hid">法师|SOR|武器|法球</div>
 <br>28967 巴尔(地狱)
 <br>39519 冰冻怪魔(ACT5冰河) (地狱)
 <br>39519 暴躁外皮(地狱)
@@ -264,7 +292,7 @@ function dofilter() {
 <br>39519 粉碎者(ACT5冰窖) (地狱)
 <br>39519 剥壳凹槽(ACT5亚瑞特高原) (地狱)
 <br>
-<br>[撒卡蓝姆的使者] (饰金盾牌) Herald Of Zakarum [Gilded Shield]
+<br>[撒卡蓝姆的使者] (饰金盾牌) Herald Of Zakarum [Gilded Shield]<div class="hid">圣骑士|PAL|盾牌|SJD</div>
 <br>2660 巴尔(噩梦)
 <br>2685 暗黑破坏神(噩梦)
 <br>2769 安达利尔(地狱)
@@ -274,12 +302,12 @@ function dofilter() {
 <br>3602 墨非斯托(噩梦)
 <br>6586 督瑞尔(地狱)
 <br>
-<br>[阿而玛-尼格拉] (神圣轻圆盾) Alma Negra [Sacred Rondache]
+<br>[阿而玛-尼格拉] (神圣轻圆盾) Alma Negra [Sacred Rondache]<div class="hid">圣骑士|PAL|盾牌</div>
 <br>1775 暗黑破坏神(地狱)
 <br>1810 巴尔(地狱)
 <br>2086 墨非斯托(地狱)
 <br>
-<br>[侏儒] (祭司印记) Homunculus [Hierophant Trophy]
+<br>[侏儒] (祭司印记) Homunculus [Hierophant Trophy]<div class="hid">死灵法师|NEC|盾牌|尿壶</div>
 <br>1857 巴尔(噩梦)
 <br>1931 安达利尔(地狱)
 <br>2102 墨非斯托(地狱)
@@ -288,7 +316,7 @@ function dofilter() {
 <br>2372 暗黑破坏神(噩梦)
 <br>4598 督瑞尔(地狱)
 <br>
-<br>[魔力重生] (血王之骨) Darkforce Spawn [Bloodlord Skull]
+<br>[魔力重生] (血王之骨) Darkforce Spawn [Bloodlord Skull]<div class="hid">死灵法师|NEC|盾牌|尿壶</div>
 <br>35404 巴尔(地狱)
 <br>45611 冰冻怪魔(ACT5冰河) (地狱)
 <br>45611 暴躁外皮(地狱)
@@ -296,11 +324,11 @@ function dofilter() {
 <br>45611 粉碎者(ACT5冰窖) (地狱)
 <br>45611 剥壳凹槽(ACT5亚瑞特高原) (地狱)
 <br>
-<br>[骨焰] (女妖之骨) Boneflame [Succubus Skull]
+<br>[骨焰] (女妖之骨) Boneflame [Succubus Skull]<div class="hid">死灵法师|NEC|盾牌|尿壶</div>
 <br>2272 巴尔(地狱)
 <br>3218 暗黑破坏神(地狱)
 <br>
-<br>[巴特克的猛击] (巨鹰爪) Bartuc's Cut-Throat [Greater Talons]
+<br>[巴特克的猛击] (巨鹰爪) Bartuc's Cut-Throat [Greater Talons]<div class="hid">刺客|ASN|爪|拳刃|拳剑</div>
 <br>612 巴尔(噩梦)
 <br>615 暗黑破坏神(噩梦)
 <br>637 安达利尔(地狱)
@@ -310,7 +338,7 @@ function dofilter() {
 <br>825 墨非斯托(噩梦)
 <br>1515 督瑞尔(地狱)
 <br>
-<br>[亚瑞特的面容] (杀手防护面甲) Arreat's Face [Slayer Guard]
+<br>[亚瑞特的面容] (杀手防护面甲) Arreat's Face [Slayer Guard]<div class="hid">野蛮人|BAR|BB|头盔|帽子|飞机头</div>
 <br>1857 巴尔(噩梦)
 <br>1931 安达利尔(地狱)
 <br>2102 墨非斯托(地狱)
@@ -319,13 +347,13 @@ function dofilter() {
 <br>2372 暗黑破坏神(噩梦)
 <br>4598 督瑞尔(地狱)
 <br>
-<br>[狼嚎] (暴怒面甲) Wolfhowl [Fury visor]
+<br>[狼嚎] (暴怒面甲) Wolfhowl [Fury visor]<div class="hid">野蛮人|BAR|BB|头盔|帽子|狼头</div>
 <br>1364 墨非斯托(地狱)
 <br>1417 暗黑破坏神(地狱)
 <br>1439 巴尔(地狱)
 <br>3174 督瑞尔(地狱)
 <br>
-<br>[加尔的长发] (图腾面具狼盔) Jalal's Mane [Totemic Mask]
+<br>[加尔的长发] (图腾面具狼盔) Jalal's Mane [Totemic Mask]<div class="hid">德鲁伊|DRU|头盔|帽子|狼头</div>
 <br>1144 安达利尔(地狱)
 <br>1159 巴尔(噩梦)
 <br>1243 墨非斯托(地狱)
@@ -335,11 +363,11 @@ function dofilter() {
 <br>2709 督瑞尔(地狱)
 <br>9923 尼拉塞克(地狱)
 <br>
-<br>[灵魂看守者] (大地之灵) Spirit Keeper [Earth Spirit]
+<br>[灵魂看守者] (大地之灵) Spirit Keeper [Earth Spirit]<div class="hid">德鲁伊|DRU|头盔|帽子</div>
 <br>2820 巴尔(地狱)
 <br>3210 暗黑破坏神(地狱)
 <br>
-<br>[泰坦的复仇] (祭奠标枪) Titan's Revenge [Ceremonial Javelin]
+<br>[泰坦的复仇] (祭典标枪) Titan's Revenge [Ceremonial Javelin]<div class="hid">亚马逊|AMA|远程武器|投掷|标枪|TT</div>
 <br>733 巴尔
 <br>777 墨非斯托(噩梦)
 <br>814 暗黑破坏神(噩梦)
@@ -353,13 +381,13 @@ function dofilter() {
 <br>
 <br><tex>四、[头环 & 头盔] Helms & Circles</tex>
 <br>
-<br>[奇拉的守护] (三重冠) Kira's Guardian [Tiara]
+<br>[奇拉的守护] (三重冠) Kira's Guardian [Tiara]<div class="hid">头盔|帽子</div>
 <br>959 暗黑破坏神(地狱)
 <br>969 巴尔(地狱)
 <br>1132 墨非斯托(地狱)
 <br>7449 尼拉塞克(地狱)
 <br>
-<br>[格利风之眼] (权冠) Griffon's Eye [Diadem]
+<br>[格利风之眼] (权冠) Griffon's Eye [Diadem]<div class="hid">头盔|帽子|电头|GLF</div>
 <br>19301 巴尔(地狱)
 <br>25272 冰冻怪魔(ACT5冰河) (地狱)
 <br>25272 暴躁外皮(地狱)
@@ -367,7 +395,7 @@ function dofilter() {
 <br>25400 复活的骷髅法师(ACT5亚瑞特高原) (地狱) (非固定暗金小BOSS)
 <br>25400 剥壳凹槽(ACT5亚瑞特高原) (地狱)
 <br>
-<br>[偷取骷髅] (无颊头盔) Stealskull [Casque]
+<br>[偷取骷髅] (无颊头盔) Stealskull [Casque]<div class="hid">头盔|帽子</div>
 <br>940 墨非斯托(噩梦)
 <br>982 暗黑破坏神(噩梦)
 <br>1016 巴尔(噩梦)
@@ -379,7 +407,7 @@ function dofilter() {
 <br>2466 督瑞尔(地狱)
 <br>2911 安达利尔(噩梦)
 <br>
-<br>[黑角面具] (死亡面具) Blackhorn's Face [Death Mask]
+<br>[黑角面具] (死亡面具) Blackhorn's Face [Death Mask]<div class="hid">头盔|帽子</div>
 <br>483 暗黑破坏神(噩梦)
 <br>489 墨非斯托(噩梦)
 <br>500 巴尔(噩梦)
@@ -391,7 +419,7 @@ function dofilter() {
 <br>2192 督瑞尔(噩梦)
 <br>3633 尼拉塞克(噩梦)
 <br>
-<br>[谐角之冠] (军帽) Harlequin Crest [Shako]
+<br>[谐角之冠] (军帽) Harlequin Crest [Shako]<div class="hid">头盔|帽子|绿帽子</div>
 <br>752 安达利尔(地狱)
 <br>771 墨非斯托(地狱)
 <br>792 暗黑破坏神(地狱)
@@ -403,7 +431,7 @@ function dofilter() {
 <br>6583 召唤者(地狱)
 <br>7411 女伯爵(地狱)
 <br>
-<br>[吸血鬼的凝视] (残酷头盔) Vampiregaze [Grim Helm]
+<br>[吸血鬼的凝视] (残酷头盔) Vampiregaze [Grim Helm]<div class="hid">头盔|帽子|物免盔|WMK</div>
 <br>1434 巴尔(噩梦)
 <br>1465 暗黑破坏神(噩梦)
 <br>1489 安达利尔(地狱)
@@ -413,17 +441,17 @@ function dofilter() {
 <br>1974 墨非斯托(噩梦)
 <br>3484 督瑞尔(地狱)
 <br>
-<br>[夜翼面纱] (螺旋头盔) Nightwing's Veil [Spired Helm]
+<br>[夜翼面纱] (螺旋头盔) Nightwing's Veil [Spired Helm]<div class="hid">头盔|帽子|冰头</div>
 <br>2458 巴尔(地狱)
 <br>3501 暗黑破坏神(地狱)
 <br>
-<br>[安达利而的面貌] (恶魔头盖骨面具) Andariel's Visage [Demonhead]
+<br>[安达利尔的面貌] (恶魔头盖骨面具) Andariel's Visage [Demonhead]<div class="hid">头盔|帽子</div>
 <br>835 暗黑破坏神(地狱)
 <br>843 巴尔(地狱)
 <br>1543 墨非斯托(地狱)
 <br>6481 尼拉塞克(地狱)
 <br>
-<br>[年纪之冠] (头冠) Crown of Ages [Corona]
+<br>[年纪之冠] (头冠) Crown of Ages [Corona]<div class="hid">头盔|帽子</div>
 <br>19301 巴尔(地狱)
 <br>25272 冰冻怪魔(ACT5冰河) (地狱)
 <br>25272 暴躁外皮(地狱)
@@ -431,7 +459,7 @@ function dofilter() {
 <br>
 <br><tex>五、[盔甲] Armor</tex>
 <br>
-<br>[蛇魔法师之皮] (海蛇皮甲) Skin of the Vipermagi [Serpentskin Armor]
+<br>[蛇魔法师之皮] (海蛇皮甲) Skin of the Vipermagi [Serpentskin Armor]<div class="hid">盔甲|铠甲|衣服</div>
 <br>444 安达利尔(噩梦)
 <br>457 巴尔
 <br>490 墨非斯托(噩梦)
@@ -443,7 +471,7 @@ function dofilter() {
 <br>609 巴尔(地狱)
 <br>1074 督瑞尔(噩梦)
 <br>
-<br>[守护天使] (圣堂武士外袍) Guardian Angel [Templar Coat]
+<br>[守护天使] (圣堂武士外袍) Guardian Angel [Templar Coat]<div class="hid">圣骑士|PAL|盔甲|铠甲|衣服</div>
 <br>1002 巴尔(噩梦)
 <br>1043 安达利尔(地狱)
 <br>1115 墨非斯托(地狱)
@@ -455,7 +483,7 @@ function dofilter() {
 <br>8150 尼拉塞克(噩梦)
 <br>8910 尼拉塞克(地狱)
 <br>
-<br>[谢夫特斯坦布] (织网战甲) Shaftstop [Mesh Armor]
+<br>[谢夫特斯坦布] (织网战甲) Shaftstop [Mesh Armor]<div class="hid">盔甲|铠甲|衣服|物免甲|WMJ</div>
 <br>1019 墨非斯托(噩梦)
 <br>1064 暗黑破坏神(噩梦)
 <br>1103 巴尔(噩梦)
@@ -467,7 +495,7 @@ function dofilter() {
 <br>2809 督瑞尔(噩梦)
 <br>8007 尼拉塞克(噩梦)
 <br>
-<br>[诗蔻蒂的愤怒] (罗瑟战甲) Skullder's Ire [Russet Armor]
+<br>[诗蔻蒂的愤怒] (罗瑟战甲) Skullder's Ire [Russet Armor]<div class="hid">盔甲|铠甲|衣服|MF甲</div>
 <br>1430 巴尔(噩梦)
 <br>1462 暗黑破坏神(噩梦)
 <br>1487 安达利尔(地狱)
@@ -477,30 +505,30 @@ function dofilter() {
 <br>1967 墨非斯托(噩梦)
 <br>3470 督瑞尔(地狱)
 <br>
-<br>[奥墨斯的长袍] (灰暮寿衣) Ormus' Robes [Dusk Shroud]
+<br>[奥墨斯的长袍] (灰暮寿衣) Ormus' Robes [Dusk Shroud]<div class="hid">盔甲|铠甲|衣服</div>
 <br>737 墨非斯托(地狱)
 <br>758 暗黑破坏神(地狱)
 <br>766 巴尔(地狱)
 <br>1712 督瑞尔(地狱)
 <br>5891 尼拉塞克(地狱)
 <br>
-<br>[斗士的祸根] (绵羊毛皮甲) The Gladiator's Bane [Wire Fleece]
+<br>[斗士的祸根] (绵羊毛皮甲) The Gladiator's Bane [Wire Fleece]<div class="hid">盔甲|铠甲|衣服</div>
 <br>959 暗黑破坏神(地狱)
 <br>969 巴尔(地狱)
 <br>1132 墨非斯托(地狱)
 <br>7449 尼拉塞克(地狱)
 <br>
-<br>[阿凯尼的荣耀] (炎魔皮板甲) Arkaine's Valor [Balrog Skin]
+<br>[阿凯尼的荣耀] (炎魔皮板甲) Arkaine's Valor [Balrog Skin]<div class="hid">盔甲|铠甲|衣服</div>
 <br>1521 巴尔(地狱)
 <br>1745 暗黑破坏神(地狱)
 <br>11487 墨非斯托(地狱)
 <br>
-<br>[海王利维亚桑] (海妖壳甲) Leviathan [Kraken Shell]
+<br>[海王利维亚桑] (海妖壳甲) Leviathan [Kraken Shell]<div class="hid">盔甲|铠甲|衣服</div>
 <br>1235 巴尔(地狱)
 <br>1759 暗黑破坏神(地狱)
 <br>9485 尼拉塞克(地狱)
 <br>
-<br>[圣堂武士的力量] (神圣盔甲) Templar's Might [Sacred Armor]
+<br>[圣堂武士的力量] (神圣盔甲) Templar's Might [Sacred Armor]<div class="hid">盔甲|铠甲|衣服|鸟人乙</div>
 <br>21714 巴尔(地狱)
 <br>25272 冰冻怪魔(ACT5冰河) (地狱)
 <br>25272 暴躁外皮(地狱)
@@ -508,13 +536,13 @@ function dofilter() {
 <br>25400 复活的骷髅法师(ACT5亚瑞特高原) (地狱) (非固定暗金小BOSS)
 <br>25400 剥壳凹槽(ACT5亚瑞特高原) (地狱)
 <br>
-<br>[泰瑞尔的力量] (神圣盔甲) Tyrael's Might [Sacred Armor]
+<br>[泰瑞尔的力量] (神圣盔甲) Tyrael's Might [Sacred Armor]<div class="hid">盔甲|铠甲|衣服|鸟人甲</div>
 <br>173709 巴尔(地狱)
 <br>
-<br>[钢铁铠甲] (阴影铠甲)  Steel Carapace [Shadow Plate]
+<br>[钢铁铠甲] (阴影铠甲)  Steel Carapace [Shadow Plate]<div class="hid">盔甲|铠甲|衣服</div>
 <br>2186 巴尔(地狱)
 <br>
-<br>[督瑞而的壳] (護胸甲)  Duriel's Shell [Cuirass]
+<br>[都瑞尔的壳] (护胸甲)  Duriel's Shell [Cuirass]<div class="hid">盔甲|铠甲|衣服|都壳</div>
 <br>482 暗黑破坏神(噩梦)
 <br>488 墨非斯托(噩梦)
 <br>499 巴尔(噩梦)
@@ -527,7 +555,7 @@ function dofilter() {
 <br>
 <br><tex>六、[盾牌] Shields</tex>
 <br>
-<br>[魔龙的非难] (龙盾) Tiamat's Rebuke [Dragon Shield]
+<br>[魔龙的非难] (龙盾) Tiamat's Rebuke [Dragon Shield]<div class="hid">盾牌</div>
 <br>1019 墨非斯托(噩梦)
 <br>1064 暗黑破坏神(噩梦)
 <br>1103 巴尔(噩梦)
@@ -538,7 +566,7 @@ function dofilter() {
 <br>2677 督瑞尔(地狱)
 <br>2809 督瑞尔(噩梦)
 <br>
-<br>[警戒之墙] (冷酷之盾) Lidless Wall [Grim Shield]
+<br>[警戒之墙] (冷酷之盾) Lidless Wall [Grim Shield]<div class="hid">盾牌</div>
 <br>483 暗黑破坏神(噩梦)
 <br>489 墨非斯托(噩梦)
 <br>500 巴尔(噩梦)
@@ -550,7 +578,7 @@ function dofilter() {
 <br>2192 督瑞尔(噩梦)
 <br>3633 尼拉塞克(噩梦)
 <br>
-<br>[黑橡树盾] (月精灵护盾) Blackoak Shield [Luna]
+<br>[黑橡树盾] (月精灵护盾) Blackoak Shield [Luna]<div class="hid">盾牌</div>
 <br>1114 墨非斯托(地狱)
 <br>1144 暗黑破坏神(地狱)
 <br>1156 巴尔(地狱)
@@ -558,14 +586,14 @@ function dofilter() {
 <br>2427 督瑞尔(地狱)
 <br>4945 巴尔(噩梦)
 <br>
-<br>[尖刺根源] (刀刃盾牌) Spike Thorn [Blade Barrier]
+<br>[尖刺根源] (刀刃盾牌) Spike Thorn [Blade Barrier]<div class="hid">盾牌</div>
 <br>1286 暗黑破坏神(地狱)
 <br>1299 巴尔(地狱)
 <br>1335 墨非斯托(地狱)
 <br>4182 督瑞尔(地狱)
 <br>9986 尼拉塞克(地狱)
 <br>
-<br>[暴风之盾] (统治者大盾) Stormshield [Monarch]
+<br>[暴风之盾] (统治者大盾) Stormshield [Monarch]<div class="hid">盾牌|物免盾|WMD</div>
 <br>964 暗黑破坏神(地狱)
 <br>973 巴尔(地狱)
 <br>1139 墨非斯托(地狱)
@@ -573,7 +601,7 @@ function dofilter() {
 <br>
 <br><tex>七、[手套] Gloves</tex>
 <br>
-<br>[运气守护] (锁链手套) Chance Guards [Chain Gloves]
+<br>[运气守护] (锁链手套) Chance Guards [Chain Gloves]<div class="hid">手套|MF手</div>
 <br>276 墨非斯托
 <br>302 暗黑破坏神
 <br>324 巴尔
@@ -585,20 +613,20 @@ function dofilter() {
 <br>455 督瑞尔
 <br>468 墨非斯托(地狱)
 <br>
-<br>[卓古拉之握] (吸血鬼骸骨手套) Dracul's Grasp [Vampirebone Gloves]
+<br>[卓古拉之握] (吸血鬼骸骨手套) Dracul's Grasp [Vampirebone Gloves]<div class="hid">手套</div>
 <br>1119 墨非斯托(地狱)
 <br>1151 暗黑破坏神(地狱)
 <br>1162 巴尔(地狱)
 <br>2442 督瑞尔(地狱)
 <br>8936 尼拉塞克(地狱)
 <br>
-<br>[吸魂者] (吸血鬼手套) Soul Drainer [Vambraces]
+<br>[吸魂者] (吸血鬼手套) Soul Drainer [Vambraces]<div class="hid">手套</div>
 <br>1290 暗黑破坏神(地狱)
 <br>1302 巴尔(地狱)
 <br>1338 墨非斯托(地狱)
 <br>4193 督瑞尔(地狱)
 <br>
-<br>[碎钢] (食人魔铁手套) Steelrend [Ogre Gauntlets]
+<br>[碎钢] (食人魔铁手套) Steelrend [Ogre Gauntlets]<div class="hid">手套</div>
 <br>19301 巴尔(地狱)
 <br>25272 冰冻怪魔(ACT5冰河) (地狱)
 <br>25272 暴躁外皮(地狱)
@@ -608,7 +636,7 @@ function dofilter() {
 <br>
 <br><tex>八、[靴子] Boots</tex>
 <br>
-<br>[水上飘] (鲨皮之靴) Waterwalk [Sharkskin Boots]
+<br>[水上飘] (鲨皮之靴) Waterwalk [Sharkskin Boots]<div class="hid">鞋子|靴子|脚</div>
 <br>754 安达利尔(噩梦)
 <br>791 墨非斯托(噩梦)
 <br>825 暗黑破坏神(噩梦)
@@ -620,7 +648,7 @@ function dofilter() {
 <br>1329 巴尔
 <br>1732 督瑞尔(噩梦)
 <br>
-<br>[蚀肉骑士] (巨战之靴) Gore Rider [War Boots]
+<br>[蚀肉骑士] (巨战之靴) Gore Rider [War Boots]<div class="hid">鞋子|靴子|脚|CB鞋|CB靴|CB脚</div>
 <br>1008 巴尔(噩梦)
 <br>1048 安达利尔(地狱)
 <br>1121 墨非斯托(地狱)
@@ -632,7 +660,7 @@ function dofilter() {
 <br>8192 尼拉塞克(噩梦)
 <br>8958 尼拉塞克(地狱)
 <br>
-<br>[战争之旅] (战场之靴) War Traveler [Battle Boots]
+<br>[战争之旅] (战场之靴) War Traveler [Battle Boots]<div class="hid">鞋子|靴子|脚|MF鞋|MF靴|MF脚</div>
 <br>1430 巴尔(噩梦)
 <br>1462 暗黑破坏神(噩梦)
 <br>1487 安达利尔(地狱)
@@ -642,7 +670,7 @@ function dofilter() {
 <br>1967 墨非斯托(噩梦)
 <br>3470 督瑞尔(地狱)
 <br>
-<br>[沙暴之旅] (圣甲壳虫靴) Sandstorm Trek [Scarabshell Boots]
+<br>[沙暴之旅] (圣甲壳虫靴) Sandstorm Trek [Scarabshell Boots]<div class="hid">鞋子|靴子|脚</div>
 <br>740 墨非斯托(地狱)
 <br>760 暗黑破坏神(地狱)
 <br>768 巴尔(地狱)
@@ -651,13 +679,13 @@ function dofilter() {
 <br>5908 尼拉塞克(地狱)
 <br>6207 罗达门特(地狱)
 <br>
-<br>[骨髓行走] (骸骨靴) Marrowwalk [Boneweave Boots]
+<br>[骨髓行走] (骸骨靴) Marrowwalk [Boneweave Boots]<div class="hid">死灵法师|NEC|鞋子|靴子|脚|BUG鞋|BUG靴|BUG脚</div>
 <br>964 暗黑破坏神(地狱)
 <br>973 巴尔(地狱)
 <br>1139 墨非斯托(地狱)
 <br>7487 尼拉塞克(地狱)
 <br>
-<br>[影舞者] (急速靴) Shadow Dancer [Myrmidon Greaves]
+<br>[影舞者] (急速靴) Shadow Dancer [Myrmidon Greaves]<div class="hid">刺客|ASN|鞋子|靴子|脚|鹦鹉</div>
 <br>19301 巴尔(地狱)
 <br>25272 冰冻怪魔(ACT5冰河) (地狱)
 <br>25272 暴躁外皮(地狱)
@@ -667,7 +695,7 @@ function dofilter() {
 <br>
 <br><tex>九、[腰带] Belts</tex>
 <br>
-<br>[长串之耳] (魔皮动带) String of Ears [Demonhide Sash]
+<br>[长串之耳] (魔皮动带) String of Ears [Demonhide Sash]<div class="hid">腰带|物免腰</div>
 <br>444 安达利尔(噩梦)
 <br>457 巴尔
 <br>490 墨非斯托(噩梦)
@@ -679,7 +707,7 @@ function dofilter() {
 <br>609 巴尔(地狱)
 <br>1074 督瑞尔(噩梦)
 <br>
-<br>[雪之冲突] (战场腰带) Snowclash [Battle Belt]
+<br>[雪之冲突] (战场腰带) Snowclash [Battle Belt]<div class="hid">法师|SOR|腰带|暴雪腰|暴风雪腰</div>
 <br>1430 巴尔(噩梦)
 <br>1462 暗黑破坏神(噩梦)
 <br>1487 安达利尔(地狱)
@@ -689,7 +717,7 @@ function dofilter() {
 <br>1967 墨非斯托(噩梦)
 <br>3470 督瑞尔(地狱)
 <br>
-<br>[雷神之力] (巨战腰带) Thundergod's Vigor [War Belt]
+<br>[雷神之力] (巨战腰带) Thundergod's Vigor [War Belt]<div class="hid">亚马逊|AMA|腰带</div>
 <br>1008 巴尔(噩梦)
 <br>1048 安达利尔(地狱)
 <br>1121 墨非斯托(地狱)
@@ -701,14 +729,14 @@ function dofilter() {
 <br>8192 尼拉塞克(噩梦)
 <br>8958 尼拉塞克(地狱)
 <br>
-<br>[蜘蛛之网] (蛛网腰带) Arachnid Mesh [Spiderweb Sash]
+<br>[蜘蛛之网] (蛛网腰带) Arachnid Mesh [Spiderweb Sash]<div class="hid">腰带|技能腰带</div>
 <br>1114 墨非斯托(地狱)
 <br>1144 暗黑破坏神(地狱)
 <br>1156 巴尔(地狱)
 <br>2427 督瑞尔(地狱)
 <br>8889 尼拉塞克(地狱)
 <br>
-<br>[维而登戈的心结] (秘银腰带) Verdungo's Hearty Cord [Mithril Coil]
+<br>[维而登戈的心结] (秘银腰带) Verdungo's Hearty Cord [Mithril Coil]<div class="hid">腰带|物免腰</div>
 <br>837 暗黑破坏神(地狱)
 <br>846 巴尔(地狱)
 <br>1547 墨非斯托(地狱)
@@ -716,7 +744,7 @@ function dofilter() {
 <br>
 <br><tex>十、[武器] Weapon</tex>
 <br>
-<br>[布里撒-多-凯南] (弩弓) Buriza-Do Kyanon [Ballista]
+<br>[布里撒-多-凯南] (弩弓) Buriza-Do Kyanon [Ballista]<div class="hid">远程武器|弩|暴雪弩炮|大炮</div>
 <br>657 暗黑破坏神(噩梦)
 <br>665 墨非斯托(噩梦)
 <br>680 巴尔(噩梦)
@@ -726,31 +754,31 @@ function dofilter() {
 <br>784 巴尔(地狱)
 <br>1652 督瑞尔(地狱)
 <br>
-<br>[鹰号角] (十字军之弓) Eaglehorn [Crusader Bow]
+<br>[鹰号角] (十字军之弓) Eaglehorn [Crusader Bow]<div class="hid">远程武器|弓|鹰角弓</div>
 <br>1114 巴尔(地狱)
 <br>1278 暗黑破坏神(地狱)
 <br>8414 墨非斯托(地狱)
 <br>8566 尼拉塞克(地狱)
 <br>
-<br>[风之力] (九头蛇弓) Windforce [Hydra Bow]
+<br>[风之力] (九头蛇弓) Windforce [Hydra Bow]<div class="hid">远程武器|弓</div>
 <br>15792 巴尔(地狱)
 <br>21896 冰冻怪魔(ACT5冰河) (地狱)
 <br>21896 暴躁外皮(地狱)
 <br>22007 复活的骷髅法师(ACT5亚瑞特高原) (地狱) (非固定暗金小BOSS)
 <br>22007 剥壳凹槽(ACT5亚瑞特高原) (地狱)
 <br>
-<br>[魔鬼抛物线] (炎魔之矛) Demon's Arch [Balrog Spear]
+<br>[魔鬼抛物线] (炎魔之矛) Demon's Arch [Balrog Spear]<div class="hid">远程武器|投掷|标枪</div>
 <br>631 暗黑破坏神(地狱)
 <br>637 巴尔(地狱)
 <br>745 墨非斯托(地狱)
 <br>4902 尼拉塞克(地狱)
 <br>
-<br>[死灵夜翔] (鬼魂尖枪) Wraith Flight [Ghost Glaive]
+<br>[死灵夜翔] (鬼魂尖枪) Wraith Flight [Ghost Glaive]<div class="hid">远程武器|投掷|标枪</div>
 <br>922 巴尔(地狱)
 <br>1313 暗黑破坏神(地狱)
 <br>7078 尼拉塞克(地狱)
 <br>
-<br>[石像鬼之噬] (翼鱼叉) Gargoyle's Bite [Winged Harpoon]
+<br>[石像鬼之噬] (翼鱼叉) Gargoyle's Bite [Winged Harpoon]<div class="hid">远程武器|投掷|标枪</div>
 <br>15792 巴尔(地狱)
 <br>21896 冰冻怪魔(ACT5冰河) (地狱)
 <br>21896 暴躁外皮(地狱)
@@ -758,18 +786,18 @@ function dofilter() {
 <br>22007 复活的骷髅法师(ACT5亚瑞特高原) (地狱) (非固定暗金小BOSS)
 <br>22007 剥壳凹槽(ACT5亚瑞特高原) (地狱)
 <br>
-<br>[撕裂者] (翼斧) Lacerator [Winged Axe]
+<br>[撕裂者] (翼斧) Lacerator [Winged Axe]<div class="hid">远程武器|投掷|投斧|飞斧</div>
 <br>924 巴尔(地狱)
 <br>1316 暗黑破坏神(地狱)
 <br>7097 尼拉塞克(地狱)
 <br>
-<br>[白骨阴影] (巫妖法杖) Boneshade [Lich Wand]
+<br>[白骨阴影] (巫妖法杖) Boneshade [Lich Wand]<div class="hid">死灵法师|NEC|法杖</div>
 <br>1525 暗黑破坏神(地狱)
 <br>1540 巴尔(地狱)
 <br>2818 墨非斯托(地狱)
 <br>11837 尼拉塞克(地狱)
 <br>
-<br>[死亡之网] (破隐法杖) Death's Web [Unearthed Wand]
+<br>[死亡之网] (破隐法杖) Death's Web [Unearthed Wand]<div class="hid">死灵法师|NEC|法杖</div>
 <br>47488 巴尔(地狱)
 <br>65856 冰冻怪魔(ACT5冰河) (地狱)
 <br>65856 暴躁外皮(地狱)
@@ -777,13 +805,13 @@ function dofilter() {
 <br>66189 复活的骷髅法师(ACT5亚瑞特高原) (地狱) (非固定暗金小BOSS)
 <br>66189 剥壳凹槽(ACT5亚瑞特高原) (地狱)
 <br>
-<br>[光之军刀] (幻化之刃) Lightsabre [Phase Blade]
+<br>[光之军刀] (幻化之刃) Lightsabre [Phase Blade]<div class="hid">近战武器|剑|光刀</div>
 <br>607 暗黑破坏神(地狱)
 <br>613 巴尔(地狱)
 <br>1122 墨非斯托(地狱)
 <br>4710 尼拉塞克(地狱)
 <br>
-<br>[阿里巴巴之刃] (圆月弯刀) Blade Of Ali Baba [Tulwar]
+<br>[阿里巴巴之刃] (圆月弯刀) Blade Of Ali Baba [Tulwar]<div class="hid">近战武器|剑|马云剑|MF剑</div>
 <br>554 安达利尔(噩梦)
 <br>581 墨非斯托(噩梦)
 <br>607 暗黑破坏神(噩梦)
@@ -796,7 +824,7 @@ function dofilter() {
 <br>1274 督瑞尔(噩梦)
 <br>1524 督瑞尔(地狱)
 <br>
-<br>[击头者] (战斗剑)  [击头者 Headstriker,战斗剑 battle sword]
+<br>[击头者] (战斗剑)  [击头者 Headstriker,战斗剑 battle sword]<div class="hid">近战武器|剑</div>
 <br>748 墨非斯托(噩梦)
 <br>780 暗黑破坏神(噩梦)
 <br>809 巴尔(噩梦)
@@ -807,24 +835,24 @@ function dofilter() {
 <br>1003 安达利尔(噩梦)
 <br>1736 督瑞尔(噩梦)
 <br>
-<br>[末日毀滅者] (冠軍之劍) Doombringer [Champion Sword]
+<br>[末日毁灭者] (冠軍之剑) Doombringer [Champion Sword]<div class="hid">近战武器|剑</div>
 <br>1114 巴尔(地狱)
 <br>1278 暗黑破坏神(地狱)
 <br>8414 墨非斯托(地狱)
 <br>8566 尼拉塞克(地狱)
 <br>
-<br>[祖父] (巨神之刃) The Grandfather [Colossus Blade]
+<br>[祖父] (巨神之刃) The Grandfather [Colossus Blade]<div class="hid">近战武器|剑</div>
 <br>15792 巴尔(地狱)
 <br>21896 冰冻怪魔(ACT5冰河) (地狱)
 <br>21896 暴躁外皮(地狱)
 <br>21896 粉碎者(ACT5冰窖) (地狱)
 <br>
-<br>[青色愤怒] (幻化之刃) Azurewrath [Phase Blade]
+<br>[青色愤怒] (幻化之刃) Azurewrath [Phase Blade]<div class="hid">近战武器|剑|碧蓝怒火|愤青|忿青</div>
 <br>3035 暗黑破坏神(地狱)
 <br>3065 巴尔(地狱)
 <br>5609 墨非斯托(地狱)
 <br>
-<br>[肋骨粉碎者] (六尺棍) Ribcracker [Quarterstaff]
+<br>[肋骨粉碎者] (六尺棍) Ribcracker [Quarterstaff]<div class="hid">德鲁伊|DRU|近战武器|双手法杖</div>
 <br>1140 安达利尔(噩梦)
 <br>1186 巴尔
 <br>1314 暗黑破坏神(噩梦)
@@ -836,19 +864,19 @@ function dofilter() {
 <br>2761 督瑞尔(噩梦)
 <br>3301 督瑞尔(地狱)
 <br>
-<br>[奥恩德的智慧] (长老之杖)  Ondal's Wisdom [Elder Staff]
+<br>[奥恩德的智慧] (长老之杖)  Ondal's Wisdom [Elder Staff]<div class="hid">双手法杖|经验杖</div>
 <br>1521 暗黑破坏神(地狱)
 <br>1536 巴尔(地狱)
 <br>2811 墨非斯托(地狱)
 <br>11804 尼拉塞克(地狱)
 <br>
-<br>[梅格之歌的教训] (执政官之杖)  Mang Song's Lesson [Archon Staff]
+<br>[梅格之歌的教训] (执政官之杖)  Mang Song's Lesson [Archon Staff]<div class="hid">圣骑士|PAL|近战武器|单手权杖|单手锤子|单手槌子</div>
 <br>47375 巴尔(地狱)
 <br>65689 冰冻怪魔(ACT5冰河) (地狱)
 <br>65689 暴躁外皮(地狱)
 <br>65689 粉碎者(ACT5冰窖) (地狱)
 <br>
-<br>[天堂之光] (强威权杖) Heaven's Light [Mighty Scepter]
+<br>[天堂之光] (强威权杖) Heaven's Light [Mighty Scepter]<div class="hid">圣骑士|PAL|近战武器|单手权杖|单手锤子|单手槌子|CB杖|CB锤|CB槌</div>
 <br>2177 安达利尔(地狱)
 <br>3684 墨非斯托(地狱)
 <br>3788 暗黑破坏神(地狱)
@@ -856,7 +884,7 @@ function dofilter() {
 <br>8041 督瑞尔(地狱)
 <br>8178 巴尔(噩梦)
 <br>
-<br>[爱斯特龙之铁的保护区] (神使之杖) Astreon's Iron Ward [Caduceus]
+<br>[爱斯特龙之铁的保护区] (神使之杖) Astreon's Iron Ward [Caduceus]<div class="hid">圣骑士|PAL|近战武器|单手权杖|单手锤子|单手槌子</div>
 <br>47375 巴尔(地狱)
 <br>65689 冰冻怪魔(ACT5冰河) (地狱)
 <br>65689 暴躁外皮(地狱)
@@ -864,7 +892,7 @@ function dofilter() {
 <br>66022 复活的骷髅法师(ACT5亚瑞特高原) (地狱) (非固定暗金小BOSS)
 <br>66022 剥壳凹槽(ACT5亚瑞特高原) (地狱)
 <br>
-<br>[刀锋边缘] (战钺) Razor's Edge [Tomahawk]
+<br>[刀锋边缘] (战钺) Razor's Edge [Tomahawk]<div class="hid">近战武器|单手斧子</div>
 <br>605 巴尔(噩梦)
 <br>629 安达利尔(地狱)
 <br>673 墨非斯托(地狱)
@@ -874,13 +902,13 @@ function dofilter() {
 <br>5375 尼拉塞克(地狱)
 <br>5502 召唤者(地狱)
 <br>
-<br>[符文大师] (双头斧) Rune Master [Ettin Axe]
+<br>[符文大师] (双头斧) Rune Master [Ettin Axe]<div class="hid">近战武器|双手斧子</div>
 <br>630 暗黑破坏神(地狱)
 <br>636 巴尔(地狱)
 <br>743 墨非斯托(地狱)
 <br>4888 尼拉塞克(地狱)
 <br>
-<br>[死亡之刀] (狂战士斧) Death Cleaver [Berserker Axe]
+<br>[死亡之刀] (狂战士斧) Death Cleaver [Berserker Axe]<div class="hid">近战武器|单手斧子</div>
 <br>15792 巴尔(地狱)
 <br>21896 冰冻怪魔(ACT5冰河) (地狱)
 <br>21896 暴躁外皮(地狱)
@@ -888,20 +916,20 @@ function dofilter() {
 <br>22007 复活的骷髅法师(ACT5亚瑞特高原) (地狱) (非固定暗金小BOSS)
 <br>22007 剥壳凹槽(ACT5亚瑞特高原) (地狱)
 <br>
-<br>[暴风之结] (天罚之锤) Stormlash [Scourge]
+<br>[暴风之结] (天罚之锤) Stormlash [Scourge]<div class="hid">近战武器|单手锤子|单手槌子|风结</div>
 <br>6670 巴尔(地狱)
 <br>7650 暗黑破坏神(地狱)
 <br>
-<br>[史恰佛之鎚] (传说之锤) Schaefer's Hammer [Legendary Mallet]
+<br>[史恰佛之鎚] (传说之锤) Schaefer's Hammer [Legendary Mallet]<div class="hid">近战武器|双手锤子|双手槌子</div>
 <br>6271 巴尔(地狱)
 <br>
-<br>[碎脑锤] (雷槌) The Cranium Basher [Thunder Maul]
+<br>[碎脑锤] (雷槌) The Cranium Basher [Thunder Maul]<div class="hid">近战武器|双手锤子|双手槌子</div>
 <br>31583 巴尔(地狱)
 <br>43793 冰冻怪魔(ACT5冰河) (地狱)
 <br>43793 暴躁外皮(地狱)
 <br>43793 粉碎者(ACT5冰窖) (地狱)
 <br>
-<br>[铁柱] (战枪) Steel Pillar [War Pike]
+<br>[铁柱] (战枪) Steel Pillar [War Pike]<div class="hid">近战武器|双手枪|长矛</div>
 <br>15792 巴尔(地狱)
 <br>21896 冰冻怪魔(ACT5冰河) (地狱)
 <br>21896 暴躁外皮(地狱)
@@ -909,14 +937,14 @@ function dofilter() {
 <br>22007 复活的骷髅法师(ACT5亚瑞特高原) (地狱) (非固定暗金小BOSS)
 <br>22007 剥壳凹槽(ACT5亚瑞特高原) (地狱)
 <br>
-<br>[爱里欧克之针] (亥伯龙之矛) Arioc's Needle [Hyperion Spear]
+<br>[爱里欧克之针] (亥伯龙之矛) Arioc's Needle [Hyperion Spear]<div class="hid">近战武器|双手枪|长矛|技能枪|技能矛</div>
 <br>431 墨非斯托(地狱)
 <br>443 暗黑破坏神(地狱)
 <br>447 巴尔(地狱)
 <br>940 督瑞尔(地狱)
 <br>3439 尼拉塞克(地狱)
 <br>
-<br>[破骨] (食人魔之斧) Bonehew [Ogre Axe]
+<br>[破骨] (食人魔之斧) Bonehew [Ogre Axe]<div class="hid">近战武器|双手长柄|双手长棍</div>
 <br>422 安达利尔(地狱)
 <br>433 墨非斯托(地狱)
 <br>445 暗黑破坏神(地狱)
@@ -924,7 +952,7 @@ function dofilter() {
 <br>509 巴尔(噩梦)
 <br>945 督瑞尔(地狱)
 <br>
-<br>[水魔陷阱] (魔鬼之叉) Kelpie Snare [Fuscina]
+<br>[水魔陷阱] (魔鬼之叉) Kelpie Snare [Fuscina]<div class="hid">近战武器|双手枪|长矛|减速叉|振动棒|震动棒</div>
 <br>381 安达利尔(噩梦)
 <br>396 巴尔
 <br>421 墨非斯托(噩梦)
@@ -935,7 +963,7 @@ function dofilter() {
 <br>519 暗黑破坏神(地狱)
 <br>523 巴尔(地狱)
 <br>
-<br>[宏-森丹] (三叉长枪) Hone Sundan [Yari]
+<br>[宏-森丹] (三叉长枪) Hone Sundan [Yari]<div class="hid">近战武器|双手枪|长矛</div>
 <br>641 墨非斯托(噩梦)
 <br>669 暗黑破坏神(噩梦)
 <br>693 巴尔(噩梦)
@@ -946,13 +974,13 @@ function dofilter() {
 <br>1684 督瑞尔(地狱)
 <br>1767 督瑞尔(噩梦)
 <br>
-<br>[死神的丧钟] (锐利之斧) The Reaper's Toll [Thresher]
+<br>[死神的丧钟] (锐利之斧) The Reaper's Toll [Thresher]<div class="hid">近战武器|双手长柄|双手长棍|SZ</div>
 <br>631 暗黑破坏神(地狱)
 <br>637 巴尔(地狱)
 <br>745 墨非斯托(地狱)
 <br>4902 尼拉塞克(地狱)
 <br>
-<br>[暴风尖塔] (鲛尾巨斧) Stormspire [Giant Thresher]
+<br>[暴风尖塔] (鲛尾巨斧) Stormspire [Giant Thresher]<div class="hid">近战武器|双手长柄|双手长棍</div>
 <br>15792 巴尔(地狱)
 <br>21896 冰冻怪魔(ACT5冰河) (地狱)
 <br>21896 暴躁外皮(地狱)
@@ -960,24 +988,23 @@ function dofilter() {
 <br>22007 复活的骷髅法师(ACT5亚瑞特高原) (地狱) (非固定暗金小BOSS)
 <br>22007 剥壳凹槽(ACT5亚瑞特高原) (地狱)
 <br>
-<br>[盗墓者] (神秘之斧) Tomb Reaver [Cyrptic Axe]
+<br>[盗墓者] (神秘之斧) Tomb Reaver [Cyrptic Axe]<div class="hid">近战武器|双手长柄|双手长棍|DMZ|大妹子</div>
 <br>922 巴尔(地狱)
 <br>1313 暗黑破坏神(地狱)
 <br>7078 尼拉塞克(地狱)
 <br>
-<br>[弑夫刃] (庇护之弓)  Widowmaker [Ward Bow]
+<br>[弑夫刃] (庇护之弓)  Widowmaker [Ward Bow]<div class="hid">远程武器|弓</div>
 <br>924 巴尔(地狱)
 <br>1316 暗黑破坏神(地狱)
 <br>7097 尼拉塞克(地狱)
 <br>
 <br><tex>十一、[套装] Set Items</tex>
 <br>
-<br>1. [Bul-Kathos' Children]
+<br>1. [Bul-Kathos' Children]<div class="hid"></div>
 <br>
-<br>[布尔凯索的神圣代价] (巨神之刃) Bul-Kathos' Sacred Charg [ColossusBlade]
-<br>[布尔凯索的部族守护] (秘仪之剑) Bul-Kathos' Tribal Guardian [Mythical Sword]
+<br>[布尔凯索的神圣代价] (巨神之刃) Bul-Kathos' Sacred Charg [ColossusBlade]<div class="hid">套装|野蛮人|BAR|BB|近战武器|双手剑|儿子剑</div>
+<br>[布尔凯索的部族守护] (秘仪之剑) Bul-Kathos' Tribal Guardian [Mythical Sword]<div class="hid">套装|野蛮人|BAR|BB|近战武器|双手剑|儿子剑</div>
 <br>两者情况相同
-<br>
 <br>6086 巴尔(地狱)
 <br>7420 复活的骷髅法师(ACT5亚瑞特高原) (地狱) (非固定暗金小BOSS)
 <br>7420 剥壳凹槽(ACT5亚瑞特高原) (地狱)
@@ -985,9 +1012,9 @@ function dofilter() {
 <br>7421 暴躁外皮(地狱)
 <br>7421 粉碎者(ACT5冰窖) (地狱)
 <br>
-<br>2. [Immortal King]
+<br>2. [Immortal King]<div class="hid"></div>
 <br>
-<br>[不朽之王的灵魂牢宠] (神圣盔甲) Immortal King's Soul Cage [Sacrede]
+<br>[不朽之王的灵魂牢宠] (神圣盔甲) Immortal King's Soul Cage [Sacrede]<div class="hid">套装|野蛮人|BAR|BB|盔甲|铠甲|衣服|不朽甲|IK甲</div>
 <br>7438 巴尔(地狱)
 <br>8563 复活的骷髅法师(ACT5亚瑞特高原) (地狱) (非固定暗金小BOSS)
 <br>8563 剥壳凹槽(ACT5亚瑞特高原) (地狱)
@@ -995,9 +1022,9 @@ function dofilter() {
 <br>8565 暴躁外皮(地狱)
 <br>8565 粉碎者(ACT5冰窖) (地狱)
 <br>
-<br>3. [Griswold's Legacy]
+<br>3. [Griswold's Legacy]<div class="hid"></div>
 <br>
-<br>[格瑞斯华尔德的勇气] (头冠) Griswold's Valor [Corona]
+<br>[格瑞斯华尔德的勇气] (头冠) Griswold's Valor [Corona]<div class="hid">套装|圣骑士|PAL头盔|帽子</div>
 <br>7438 巴尔(地狱)
 <br>8563 复活的骷髅法师(ACT5亚瑞特高原) (地狱) (非固定暗金小BOSS)
 <br>8563 剥壳凹槽(ACT5亚瑞特高原) (地狱)
@@ -1005,7 +1032,7 @@ function dofilter() {
 <br>8565 暴躁外皮(地狱)
 <br>8565 粉碎者(ACT5冰窖) (地狱)
 <br>
-<br>[格瑞斯华尔德的救赎] (神使之杖) Griswold's Redemption [Caduceus]
+<br>[格瑞斯华尔德的救赎] (神使之杖) Griswold's Redemption [Caduceus]<div class="hid">套装|圣骑士|PAL|德鲁伊|DRU|近战武器|单手权杖|单手锤子|单手槌子</div>
 <br>18257 巴尔(地狱)
 <br>22259 复活的骷髅法师(ACT5亚瑞特高原) (地狱) (非固定暗金小BOSS)
 <br>22259 剥壳凹槽(ACT5亚瑞特高原) (地狱)
@@ -1013,7 +1040,7 @@ function dofilter() {
 <br>22262 暴躁外皮(地狱)
 <br>22262 粉碎者(ACT5冰窖) (地狱)
 <br>
-<br>[格瑞斯华尔德的荣耀] (旋风盾) Griswold's Honer [Vortex Shield]
+<br>[格瑞斯华尔德的荣耀] (旋风盾) Griswold's Honer [Vortex Shield]<div class="hid">套装|圣骑士|PAL|盾牌</div>
 <br>20541 冰冻怪魔(ACT5冰河) (地狱)
 <br>20541 暴躁外皮(地狱)
 <br>20541 复活的骷髅法师(ACT5亚瑞特高原) (地狱) (非固定暗金小BOSS)
@@ -1021,9 +1048,9 @@ function dofilter() {
 <br>20541 剥壳凹槽(ACT5亚瑞特高原) (地狱)
 <br>20691 巴尔(地狱)
 <br>
-<br>4. [M'avina's Battle Hymn]
+<br>4. [M'avina's Battle Hymn]<div class="hid"></div>
 <br>
-<br>[马维娜的真实之眼] (权冠) M'avina's True Sight [Diadem]
+<br>[马维娜的真实之眼] (权冠) M'avina's True Sight [Diadem]<div class="hid">套装|亚马逊|AMA|头盔|帽子</div>
 <br>7438 巴尔(地狱)
 <br>8563 复活的骷髅法师(ACT5亚瑞特高原) (地狱) (非固定暗金小BOSS)
 <br>8563 剥壳凹槽(ACT5亚瑞特高原) (地狱)
@@ -1031,9 +1058,9 @@ function dofilter() {
 <br>8565 暴躁外皮(地狱)
 <br>8565 粉碎者(ACT5冰窖) (地狱)
 <br>
-<br>5. [Natalya's Odium]
+<br>5. [Natalya's Odium]<div class="hid"></div>
 <br>
-<br>[娜塔亚的标记] (近身剪) Natalya's Mark [Scissors Suwayyah]
+<br>[娜塔亚的标记] (近身剪) Natalya's Mark [Scissors Suwayyah]<div class="hid">套装|刺客|ASN|爪|拳刃|拳剑</div>
 <br>8464 巴尔(地狱)
 <br>8899 冰冻怪魔(ACT5冰河) (地狱)
 <br>8899 暴躁外皮(地狱)
@@ -1041,9 +1068,9 @@ function dofilter() {
 <br>8899 粉碎者(ACT5冰窖) (地狱)
 <br>8899 剥壳凹槽(ACT5亚瑞特高原) (地狱)
 <br>
-<br>6. [Tal Rasha's Wrappings]
+<br>6. [Tal Rasha's Wrappings]<div class="hid"></div>
 <br>
-<br>[塔拉夏的守护] (漆甲) Tal Rasha's Guardianship [Lacquered Plate]
+<br>[塔拉夏的守护] (漆甲) Tal Rasha's Guardianship [Lacquered Plate]<div class="hid">套装|法师|SOR|7+</div>
 <br>843 巴尔(地狱)
 <br>5801 尼拉塞克(地狱)
 <br>6398 冰冻怪魔(ACT5冰河) (地狱)
@@ -1053,7 +1080,7 @@ function dofilter() {
 <br>6439 剥壳凹槽(ACT5亚瑞特高原) (地狱)
 <br>6781 暗黑破坏神(地狱)
 <br>
-<br>[塔拉夏织细衣服] (织网腰带) Tal Rasha's Fine-Spun Cloth [Mesh Belt]
+<br>[塔拉夏织细衣服] (织网腰带) Tal Rasha's Fine-Spun Cloth [Mesh Belt]<div class="hid">套装|法师|SOR|腰带</div>
 <br>390 墨非斯托(噩梦)
 <br>408 暗黑破坏神(噩梦)
 <br>421 巴尔(噩梦)
@@ -1062,7 +1089,7 @@ function dofilter() {
 <br>481 暗黑破坏神(地狱)
 <br>481 巴尔(地狱)
 <br>
-<br>[塔拉夏的判决] (项链) Tal Rasha's Adjudication [Amulet]
+<br>[塔拉夏的判决] (项链) Tal Rasha's Adjudication [Amulet]<div class="hid">套装|法师|SOR|项链</div>
 <br>1853 安达利尔(地狱)
 <br>1954 安达利尔(噩梦)
 <br>3929 督瑞尔(地狱)
@@ -1077,7 +1104,7 @@ function dofilter() {
 <br>4800 暗黑破坏神
 <br>6260 墨非斯托
 <br>
-<br>[塔拉夏的女士之眼] (旋涡水晶)  Tal Rasha's Lidless Eye [Orb]
+<br>[塔拉夏的女士之眼] (旋涡水晶)  Tal Rasha's Lidless Eye [Orb]<div class="hid">套装|法师|SOR|法球</div>
 <br>719 暗黑破坏神(噩梦)
 <br>732 巴尔(噩梦)
 <br>847 墨非斯托(地狱)
@@ -1087,17 +1114,17 @@ function dofilter() {
 <br>960 墨非斯托(噩梦)
 <br>1852 督瑞尔(地狱)
 <br>
-<br>7. [Trang-Oul's Avatar]
+<br>7. [Trang-Oul's Avatar]<div class="hid"></div>
 <br>
-<br>[塔格奥之外装] (骸骨面罩) Trang-Oul's Guise [Bone Visage]
+<br>[塔格奥之外装] (骸骨面罩) Trang-Oul's Guise [Bone Visage]<div class="hid">套装|死灵法师|NEC|头盔|帽子</div>
 <br>848 巴尔(地狱)
 <br>5833 尼拉塞克(地狱)
 <br>
-<br>[塔格奥之束带] (洞穴巨魔腰带) Trang-Oul's Girth [Troll Belt]
+<br>[塔格奥之束带] (洞穴巨魔腰带) Trang-Oul's Girth [Troll Belt]<div class="hid">套装|死灵法师|NEC|腰带</div>
 <br>843 巴尔(地狱)
 <br>5801 尼拉塞克(地狱)
 <br>
-<br>[塔格奥之爪] (重型护腕) Trang-Oul's Claws [Heavy Bracers]
+<br>[塔格奥之爪] (重型护腕) Trang-Oul's Claws [Heavy Bracers]<div class="hid">套装|死灵法师|NEC|手套</div>
 <br>390 墨非斯托(噩梦)
 <br>408 暗黑破坏神(噩梦)
 <br>421 巴尔(噩梦)
@@ -1108,9 +1135,9 @@ function dofilter() {
 <br>1022 督瑞尔(地狱)
 <br>1075 督瑞尔(噩梦)
 <br>
-<br>8. [Aldur's Watchtower]
+<br>8. [Aldur's Watchtower]<div class="hid"></div>
 <br>
-<br>[艾尔多的成长] (战场之鞋)  Aldur's Advance [Battle Boots]
+<br>[艾尔多的成长] (战场之鞋)  Aldur's Advance [Battle Boots]<div class="hid">套装|德鲁伊|DRU|鞋子|靴子|脚</div>
 <br>549 巴尔(噩梦)
 <br>564 暗黑破坏神(噩梦)
 <br>609 墨非斯托(地狱)
@@ -1122,7 +1149,7 @@ function dofilter() {
 <br>
 <br><tex>十二、[珠宝] Jewel</tex>
 <br>
-<br>[彩虹刻面] Rainbow Facet (火/冰/电/毒)
+<br>[彩虹刻面] Rainbow Facet (火/冰/电/毒)<div class="hid">珠宝|珠子|火珠|火猪|冰珠|冰猪|电珠|电猪|毒珠|毒猪</div>
 <br>3427 督瑞尔(地狱)
 <br>3948 巴尔(地狱)
 <br>4014 暗黑破坏神(地狱)
