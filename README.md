@@ -6,7 +6,6 @@
 
 <br>有想法和建议请联系  **369493652@qq.com**
 
-License
 ---
 MIT License.
 Copyright (c) 2017 chenyu8674
