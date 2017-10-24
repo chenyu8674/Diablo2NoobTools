@@ -5,3 +5,8 @@
 <blockquote><a href="http://htmlpreview.github.io/?https://github.com/chenyu8674/Diablo2NoobTools/blob/master/EquipDrop.html" target="_blank">装备掉率速查</a>：查找指定装备掉率最高的怪物名称</blockquote>
 
 <br>有想法和建议请联系  **369493652@qq.com**
+
+License
+---
+MIT License.
+Copyright (c) 2017 chenyu8674
