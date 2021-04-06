@@ -9,7 +9,7 @@ div{margin-left:30px;}
 *{font-size:14px;line-height:20px;font-family:"YaHei Consolas Hybrid"}
 tex{margin-left:-30px;color:#666;font-size:16px;font-weight:900}
 input{padding-left:20px;text-align:left;}
-#title{position:fixed;width:100%;height:100px;margin:-20px;padding:20px;background:#f9f9f9;border-bottom:1px solid #bbb;}
+#title{position:fixed;width:100%;height:120px;margin:-20px;padding:20px;background:#f9f9f9;border-bottom:1px solid #bbb;}
 .hid{display:none;visibility:hidden;}
 </style>
 <script type="text/javascript">
@@ -125,10 +125,11 @@ function dofilter() {
 数值代表<tex style="color:#f66;font-size:14px;margin-left:2px;">300mf、单人模式下，掉落一件该装备所需击杀指定怪物的平均次数</tex>
 <br>其他mf值可进行换算，如0mf则掉率降低约60%，1000mf则掉率提高约30%
 <br>不包括任务杀/Bug杀和平均需要10000次以上(除非掉率极低)的情况，部分低级易出装备未列出
+<br>检索词支持装备本名，别名(如大炮、wmj)，职业名(如法师、dru)，装备类型(如衣服、狼头)等
 <br><br><tex style="margin-left:80px;">检索装备：</tex><input id="equipname" size="20" maxLength="20" value="" onclick="clearinput()" oninput="dofilter();" />&nbsp;&nbsp;
 检索到<tex id="resultcount" style="color:#f66;font-size:14px;margin-left:0px;font-weight:300">120</tex>个结果
 </div>
-<div style="height:120px;"></div>
+<div style="height:140px;"></div>
 <div id="result"></div>
 <div id="equips">
 <br><tex>一、[戒指] Rings</tex>
