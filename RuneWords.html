@@ -12,11 +12,40 @@ input{text-align:center;}
 #title{position:fixed;width:100%;height:30px;margin:-20px;padding:20px;background:#f9f9f9;border-bottom:1px solid #bbb;}
 </style>
 <script type="text/javascript">
+$(document).ready(function(){
+    var slotNumber = getUrlParam("slot");
+    var maxNumber = getUrlParam("max");
+    var minNumber = getUrlParam("min");
+    if (slotNumber) {
+        $("#slotnumber").val(slotNumber);
+    }
+    if (maxNumber) {
+        $("#maxnumber").val(maxNumber);
+    }
+    if (minNumber) {
+        $("#minnumber").val(minNumber);
+    }
+    dofilter();
+});
+function getUrlParam(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+    var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+    if (r != null) return unescape(r[2]); return null; //返回参数值
+}
 function dofilter() {
     var resultCount = 0;
     var slotNumber = parseInt($("#slotnumber").attr("value"));
+    if (!slotNumber) {
+        slotNumber = 0;
+    }
     var maxNumber = parseInt($("#maxnumber").attr("value"));
+    if (!maxNumber) {
+        maxNumber = 33;
+    }
     var minNumber = parseInt($("#minnumber").attr("value"));
+    if (!minNumber) {
+        minNumber = 1;
+    }
     // 筛选满足条件的装备
     var aList = $("a");
     for (var i = 0; i < aList.length; i++) {
