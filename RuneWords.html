@@ -2,11 +2,12 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+<title>符文之语</title>
 <script type="text/javascript" src="jquery.min.js"></script>
 <style type="text/css">
-*{font-size:14px;line-height:24px;font-family:"YaHei Consolas Hybrid"}
+*{font-size:14px;line-height:30px;}
 body{margin:0;padding:20px;width:99999px;overflow-x:hidden;}
-a{color:#00f;text-decoration:underline;}
+a{font-size:16px;line-height:35px;color:#00f;text-decoration:underline;}
 tex{color:#f66;}
 input{text-align:center;}
 #title{position:fixed;width:100%;height:30px;margin:-20px;padding:20px;background:#f9f9f9;border-bottom:1px solid #bbb;}
@@ -28,9 +29,9 @@ $(document).ready(function(){
     dofilter();
 });
 function getUrlParam(name) {
-    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
-    var r = window.location.search.substr(1).match(reg);  //匹配目标参数
-    if (r != null) return unescape(r[2]); return null; //返回参数值
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) return unescape(r[2]); return null;
 }
 function dofilter() {
     var resultCount = 0;
@@ -52,6 +53,11 @@ function dofilter() {
         var slotMatch = false;
         var numberMatch = false;
         var aItem = $(aList[i]);
+        aItem.unbind("click");
+        aItem.click(function(){
+            var title = getstr($(this).text(), " ", " ", false, true);
+            alert("【" + title + "】\r\n" + $(this).attr("title"));
+        });
         var aText = aItem.text();
         // 筛选指定孔数
         if (slotNumber > 0) {
@@ -106,6 +112,25 @@ function dofilter() {
             divItem.css("display", "none");
         }
     }
+}
+function getstr(v,s,e,a,b){
+    var r="";
+    var t=v.indexOf(s);
+    if(t<0){
+        return "";
+    }
+    if(a){
+        r=v.substr(t);
+    }else{
+        r=v.substr(t+s.length);
+    }
+    t=r.substr(1).indexOf(e);
+    if(b){
+        r=r.substr(0,t+e.length);
+    }else{
+        r=r.substr(0,t);
+    }
+    return r;
 }
 </script>
 </head>
